@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SERPENT — Snake Evolved</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css" />
+</head>
+
+<body>
+
+    <!-- Scanline overlay -->
+    <div class="scanlines"></div>
+
+    <!-- Background grid -->
+    <div class="bg-grid"></div>
+
+    <!-- Floating particles -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Main container -->
+    <div class="app-container">
+
+        <!-- HEADER -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-main">SERPENT</span>
+                <span class="logo-sub">// EVOLVED</span>
+            </div>
+            <div class="header-stats">
+                <div class="stat-pill" id="pill-score">
+                    <span class="stat-label">SCORE</span>
+                    <span class="stat-value" id="display-score">000</span>
+                </div>
+                <div class="stat-pill" id="pill-level">
+                    <span class="stat-label">LEVEL</span>
+                    <span class="stat-value" id="display-level">1</span>
+                </div>
+                <div class="stat-pill" id="pill-hi">
+                    <span class="stat-label">BEST</span>
+                    <span class="stat-value" id="display-hi">000</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- GAME AREA -->
+        <div class="game-wrapper">
+            <!-- Left panel -->
+            <aside class="side-panel left-panel">
+                <div class="panel-block">
+                    <div class="panel-title">LEVEL</div>
+                    <div class="level-badge" id="level-badge">NOVICE</div>
+                    <div class="level-bar-wrap">
+                        <div class="level-bar" id="level-bar"></div>
+                    </div>
+                    <div class="level-hint" id="level-hint">Next: 5 pts</div>
+                </div>
+                <div class="panel-block">
+                    <div class="panel-title">SPEED</div>
+                    <div class="speed-display" id="speed-display">●●○○○○○○○○</div>
+                </div>
+                <div class="panel-block">
+                    <div class="panel-title">LENGTH</div>
+                    <div class="big-num" id="snake-length">3</div>
+                </div>
+            </aside>
+
+            <!-- Canvas wrapper -->
+            <div class="canvas-wrapper">
+                <canvas id="gameCanvas" width="480" height="480"></canvas>
+
+                <!-- Overlays -->
+                <div class="overlay" id="overlay-start">
+                    <div class="overlay-content">
+                        <div class="overlay-title glitch" data-text="SERPENT">SERPENT</div>
+                        <p class="overlay-sub">Navigate the grid. Eat. Evolve. Survive.</p>
+                        <div class="key-hints">
+                            <span>↑↓←→ or WASD to move</span>
+                        </div>
+                        <button class="btn-play" id="btn-start">INITIATE</button>
+                        <button class="btn-secondary" id="btn-leaderboard-show">LEADERBOARD</button>
+                    </div>
+                </div>
+
+                <div class="overlay hidden" id="overlay-gameover">
+                    <div class="overlay-content">
+                        <div class="overlay-title" id="go-title">TERMINATED</div>
+                        <div class="go-stats">
+                            <div class="go-stat"><span>SCORE</span><strong id="go-score">0</strong></div>
+                            <div class="go-stat"><span>LEVEL</span><strong id="go-level">1</strong></div>
+                            <div class="go-stat"><span>LENGTH</span><strong id="go-length">3</strong></div>
+                        </div>
+                        <div class="name-row" id="name-row">
+                            <input type="text" id="player-name" maxlength="16" placeholder="ENTER CALLSIGN"
+                                class="name-input" />
+                            <button class="btn-play small" id="btn-submit">SUBMIT</button>
+                        </div>
+                        <div class="rank-display hidden" id="rank-display"></div>
+                        <div class="go-actions">
+                            <button class="btn-play" id="btn-restart">RESTART</button>
+                            <button class="btn-secondary" id="btn-go-leaderboard">SCORES</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="overlay hidden" id="overlay-levelup">
+                    <div class="overlay-content compact">
+                        <div class="levelup-text" id="levelup-text">LEVEL UP</div>
+                        <div class="levelup-name" id="levelup-name">APPRENTICE</div>
+                    </div>
+                </div>
+
+                <div class="overlay hidden" id="overlay-leaderboard">
+                    <div class="overlay-content leaderboard-content">
+                        <div class="overlay-title">TOP SERPENTS</div>
+                        <table class="lb-table" id="lb-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>NAME</th>
+                                    <th>SCORE</th>
+                                    <th>LVL</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lb-body"></tbody>
+                        </table>
+                        <button class="btn-secondary" id="btn-lb-close">CLOSE</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right panel -->
+            <aside class="side-panel right-panel">
+                <div class="panel-block">
+                    <div class="panel-title">CONTROLS</div>
+                    <div class="controls-grid">
+                        <div class="ctrl-btn" id="ctrl-up">▲</div>
+                        <div class="ctrl-row">
+                            <div class="ctrl-btn" id="ctrl-left">◄</div>
+                            <div class="ctrl-btn" id="ctrl-down">▼</div>
+                            <div class="ctrl-btn" id="ctrl-right">►</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-block">
+                    <div class="panel-title">STATUS</div>
+                    <div class="status-led" id="status-led">
+                        <span class="led off" id="led-dot"></span>
+                        <span id="status-text">STANDBY</span>
+                    </div>
+                </div>
+                <div class="panel-block">
+                    <button class="btn-icon" id="btn-pause">⏸ PAUSE</button>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <span>SERPENT v2.0 // SNAKE EVOLVED</span>
+            <span>SCORE EVERY 5 TO LEVEL UP</span>
+        </footer>
+
+    </div>
+
+    <script src="/static/game.js"></script>
+</body>
+
+</html>
